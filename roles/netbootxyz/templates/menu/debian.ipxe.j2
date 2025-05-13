@@ -12,7 +12,6 @@ iseq ${os_arch} x86_64 && set os_arch amd64 ||
 iseq ${os_arch} i386 && set os_arch i386 ||
 iseq ${os_arch} arm64 && set os_arch arm64 ||
 clear debian_version
-clear older_release
 menu ${os} - ${os_arch}
 item --gap Latest Releases
 {% for item in releases.debian.versions.stable %}
@@ -22,20 +21,8 @@ item --gap Testing Releases
 {% for item in releases.debian.versions.testing %}
 item {{ item.code_name }} ${space} ${os} {{ item.name }}
 {% endfor %}
-item --gap Older Releases
-item older_release ${space} Set release codename...
 choose debian_version || goto debian_exit
-iseq ${debian_version} older_release && goto older_release ||
 goto mirrorcfg
-
-:older_release
-set older_release true
-set debian_mirror {{ releases.debian.archive_mirror }}
-echo Setting mirror to ${debian_mirror}
-clear debian_version
-echo -n Please set enter code name of release: ${} && read debian_version
-set dir ${debian_base_dir}/dists/${debian_version}/main/installer-${os_arch}/current/images/netboot/
-goto deb_boot_type
 
 :mirrorcfg
 set debian_mirror ${debian_mirror}

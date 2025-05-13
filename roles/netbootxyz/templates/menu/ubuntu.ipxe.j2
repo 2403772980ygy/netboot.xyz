@@ -12,7 +12,6 @@ iseq ${os_arch} x86_64 && set os_arch amd64 ||
 iseq ${os_arch} arm64 && set os_arch arm64 ||
 clear ubuntu_version
 clear install_type
-clear older_release
 clear install_url
 set install_type sub
 set install_priority critical
@@ -21,24 +20,12 @@ item --gap Latest Releases
 {% for item in releases.ubuntu.versions %}
 item {{ item.code_name }} ${space} ${os} {{ item.name }}
 {% endfor %}
-item --gap Older Releases
-item older_release ${space} Set release codename...
 choose ubuntu_version || goto ubuntu_exit
-iseq ${ubuntu_version} older_release && goto older_release ||
 iseq ${ubuntu_version} focal-legacy && set install_type deb ||
 iseq ${ubuntu_version} focal-legacy && set ubuntu_version focal ||
 iseq ${install_type} sub && goto boot_type ||
 iseq ${os_arch} arm64 && echo "arm64 not supported on legacy network installs, please use 20.04 Subiquity and up" && sleep 5 && goto ubuntu ||
 goto mirrorcfg
-
-:older_release
-set older_release true
-set ubuntu_mirror {{ releases.ubuntu.archive_mirror }}
-echo Setting mirror to ${ubuntu_mirror}
-clear ubuntu_version
-echo -n Please set enter code name of release: ${} && read ubuntu_version
-set dir ${ubuntu_base_dir}/dists/${ubuntu_version}-updates/main/installer-${os_arch}/current/images/netboot/
-goto boot_type
 
 :mirrorcfg
 set mirrorcfg mirror/suite=${ubuntu_version}

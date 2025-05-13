@@ -1,8 +1,16 @@
 ---
 - hosts: localhost
   user: root
+  vars:
+    proxy_env: {}
+  pre_tasks:
+    - name: Ensure private settings are loaded, such as proxy vars
+      include_vars:
+        file: custom.yml
+      ignore_errors: yes
   roles:
-    - netbootxyz
+    - role: netbootxyz
+      environment: "{{ proxy_env }}" # I have some issues with docker container connectivity, so I have this line on. This should not interfere with environments with no custom.yml
   vars_files:
     - endpoints.yml
     - user_overrides.yml

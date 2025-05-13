@@ -21,11 +21,32 @@ make_num_jobs: 1
 # bootloader_http_enabled: true
 
 # set release overrides from standard netboot.xyz defaults
-# release_overrides:
-#   alpinelinux:
-#     name: "Alpine Linux"
-#   fedora:
-#     mirror: "mirrors.kernel.org"
+release_overrides:
+  alpinelinux:
+    mirror: http://mirrors.ustc.edu.cn
+  archlinux:
+    mirror: mirrors.ustc.edu.cn
+  centos:
+    mirror: http://mirrors.ustc.edu.cn
+    base_dir: centos-stream
+  debian:
+    mirror: http://mirrors.ustc.edu.cn
+  fedora:
+    mirror: http://mirrors.ustc.edu.cn
+  kali:
+    mirror: http://mirrors.ustc.edu.cn
+  opensuse:
+    mirror: http://mirrors.ustc.edu.cn
+    base_dir: opensuse/distribution/leap
+  rockylinux:
+    mirror: http://mirrors.ustc.edu.cn
+    base_dir: rocky
+  slackware:
+    mirror: http://mirrors.ustc.edu.cn
+  ubuntu:
+    mirror: http://mirrors.ustc.edu.cn
+  
+  
 
 # set utilitiesefi_overrides from standard netboot.xyz defaults for EFI utilities
 # utilitiesefi_overrides:

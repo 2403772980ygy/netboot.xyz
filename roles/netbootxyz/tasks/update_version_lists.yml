@@ -1,0 +1,57 @@
+---
+- name: Update the version table for Arch linux
+  block:
+    - name: Fetch the dir of the versions
+      uri:
+        url: "http://{{ releases.archlinux.mirror }}/{{ releases.archlinux.base_dir }}/iso"
+        return_content: yes
+      register: arch_dir_listing
+
+    - name: Update arch versions from version listing
+      ansible.builtin.set_fact:
+        releases: >-
+          {{
+            releases | combine({
+              'archlinux': releases.archlinux | combine({
+                'versions': ('[' ~ (arch_dir_listing.content | regex_findall('<a href=.*?>.*?[^.]/</a>') | map('regex_replace', '^<a.*?>(.*)/</a>$', '{"code_name":"\1", "name":"\1"}') | list | join(',')) ~ ']') | from_json | default([])
+              })
+            }, recursive = True)
+          }}
+
+- name: Update the version table for CentOS
+  block:
+    - name: Fetch the dir of the versions
+      uri:
+        url: "{{ releases.centos.mirror }}/"
+        return_content: yes
+      register: centos_dir_listing
+
+    - name: Update arch versions from version listing
+      ansible.builtin.set_fact:
+        releases: >-
+          {{
+            releases | combine({
+              'centos': releases.centos | combine({
+                'versions': ('[' ~ (centos_dir_listing.content | regex_findall('<a href=.*?>(.*?-stream)/</a>') | map('regex_replace', '^(.*)-stream$', '{"code_name":"\1", "name":"\1.0 Stream"}') | list | join(',')) ~ ']') | from_json | default([])
+              })
+            }, recursive = True)
+          }}
+          
+- name: Update the version table for OpenSUSE
+  block:
+    - name: Fetch the dir of the versions
+      uri:
+        url: "http://{{ releases.opensuse.mirror }}/{{ releases.opensuse.base_dir }}"
+        return_content: yes
+      register: opensuse_dir_listing
+
+    - name: Update arch versions from version listing
+      ansible.builtin.set_fact:
+        releases: >-
+          {{
+            releases | combine({
+              'opensuse': releases.archlinux | combine({
+                'versions': ('[' ~ (arch_dir_listing.content | regex_findall('<a href=.*?>.*?[^.]/</a>') | map('regex_replace', '^<a.*?>(.*)/</a>$', '{"code_name":"\1", "name":"OpenSUSE Leap \1"}') | list | join(',')) ~ ']') | from_json | default([])
+              })
+            }, recursive = True)
+          }}
